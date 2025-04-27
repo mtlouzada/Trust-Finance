@@ -1,4 +1,4 @@
-namespace TF.Data.Mapping
+namespace TF.Data.Mappings
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
