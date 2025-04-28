@@ -1,69 +1,85 @@
 namespace TF.Controllers
 {
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.AspNetCore.Mvc;
     using TF.Models;
-    using TF.Services;
+    using TF.Data;
     [Route("api/[controller]")]
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        private readonly ICategoryService _categoryService;
-        public CategoryController(ICategoryService categoryService)
+        [HttpGet("categories")]
+        public async Task<IActionResult> GetAsync(
+            [FromServices] TFDataContext context)
         {
-            _categoryService = categoryService;
-        }
-        [HttpGet]
-        public IActionResult GetAllCategories()
-        {
-            var categories = _categoryService.GetAllCategories();
+            var categories = await context.Categories.ToListAsync();
             return Ok(categories);
         }
-        [HttpGet("{id}")]
-        public IActionResult GetCategoryById(int id)
+
+        [HttpGet("categories/{id:int}")]
+        public async Task<IActionResult> GetByIdAsync(
+            [FromRoute] int id,
+            [FromServices] TFDataContext context)
         {
-            var category = _categoryService.GetCategoryById(id);
+            var categories = await context
+                .Categories
+                .FirstOrDefaultAsync(x=>x.Id == id);
+            if (categories == null)
+                return NotFound(new { Message = "Category not found" });
+            
+            return Ok(categories);
+        }
+
+        [HttpPost("categories")]
+        public async Task<IActionResult> PostAsync(
+            [FromBody] Category model,
+            [FromServices] TFDataContext context)
+        {
+            await context.Categories.AddAsync(model);
+            await context.SaveChangesAsync();
+            return Created($"api/categories/{model.Id}", model);
+        }
+
+        [HttpPut("categories/{id:int}")]
+        public async Task<IActionResult> PutAsync(
+            [FromRoute] int id,
+            [FromBody] Category model,
+            [FromServices] TFDataContext context)
+        {
+            var categories = await context
+                .Categories
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (categories == null)
+                return NotFound(new { Message = "Category not found" });
+
+            categories.Name = model.Name;
+            categories.Slug = model.Slug;
+            context.Categories.Update(categories);
+
+            await context.SaveChangesAsync();
+
+            return Ok(model);
+        }
+
+        [HttpDelete("categories/{id:int}")]
+        public async Task<IActionResult> DeleteAsync(
+            [FromRoute] int id,
+            [FromServices] TFDataContext context)
+        {
+            var category = await context
+                .Categories
+                .FirstOrDefaultAsync(x => x.Id == id);
             if (category == null)
-            {
-                return NotFound();
-            }
+                return NotFound(new { Message = "Category not found" });
+
+            context.Categories.Remove(category);
+
+            await context.SaveChangesAsync();
+
             return Ok(category);
         }
 
-        [HttpPost]
-            public IActionResult CreateCategory([FromBody] Category category)
-            {
-                if (category == null)
-                {
-                    return BadRequest();
-                }
-                var createdCategory = _categoryService.CreateCategory(category);
-                return CreatedAtAction(nameof(GetCategoryById), new { id = createdCategory.Id }, createdCategory);
-            }
 
-        [HttpPut("{id}")]
-            public IActionResult UpdateCategory(int id, [FromBody] Category category)
-            {
-                if (category == null || id != category.Id)
-                {
-                    return BadRequest();
-                }
-                var updatedCategory = _categoryService.UpdateCategory(category);
-                if (updatedCategory == null)
-                {
-                    return NotFound();
-                }
-                return Ok(updatedCategory);
-            }
 
-         [HttpDelete("{id}")]
-            public IActionResult DeleteCategory(int id)
-            {
-                var deletedCategory = _categoryService.DeleteCategory(id);
-                if (deletedCategory == null)
-                {
-                    return NotFound();
-                }
-                return NoContent();
-            }
     }
 }
