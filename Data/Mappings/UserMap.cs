@@ -23,8 +23,6 @@ namespace TF.Data.Mappings
             builder.Property(u => u.Slug)
                 .IsRequired()
                 .HasMaxLength(100);
-            builder.Property(u => u.Bio)
-                .HasMaxLength(500);
         }
     }
 }
