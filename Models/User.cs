@@ -8,7 +8,6 @@ namespace TF.Models
         public string PasswordHash { get; set; } = string.Empty;
         public string Image { get; set; } = string.Empty;
         public string Slug { get; set; } = string.Empty;
-        public string Bio { get; set; } = string.Empty;
 
         public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
     }
