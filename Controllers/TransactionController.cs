@@ -65,10 +65,11 @@ namespace TF.Controllers
                 await context.SaveChangesAsync();
                 return Created($"api/transactions/{transaction.Id}", new ResultViewModel<Transaction>(transaction));
             }
-            catch
+            catch (Exception ex)
             {
-                return StatusCode(500, new ResultViewModel<Transaction>("Falha interna no servidor"));
+                return StatusCode(500, new { message = ex.Message });
             }
+
         }
         [HttpPut("transactions/{id:int}")]
         public async Task<IActionResult> PutAsync(
