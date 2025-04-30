@@ -24,11 +24,11 @@ namespace TF.Controllers
                 return StatusCode(500, new ResultViewModel<List<Transaction>>("05X04 - Falha interna no servidor"));
             }
         }
-    }
-    [HttpGet("transactions/{id:int}")]
+
+        [HttpGet("transactions/{id:int}")]
         public async Task<IActionResult> GetByIdAsync(
-        [FromRoute] int id,
-        [FromServices] TFDataContext context)
+            [FromRoute] int id,
+            [FromServices] TFDataContext context)
         {
             try
             {
@@ -69,72 +69,55 @@ namespace TF.Controllers
             {
                 return StatusCode(500, new ResultViewModel<Transaction>("Falha interna no servidor"));
             }
-            [HttpPut("transactions/{id:int}")]
-            public async Task<IActionResult> PutAsync(
-                [FromRoute] int id,
-                [FromBody] EditorTransactionViewModel model,
-                [FromServices] TFDataContext context)
+        }
+        [HttpPut("transactions/{id:int}")]
+        public async Task<IActionResult> PutAsync(
+            [FromRoute] int id,
+            [FromBody] EditorTransactionViewModel model,
+            [FromServices] TFDataContext context)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new ResultViewModel<Transaction>(ModelState.GetErrors()));
+            try
             {
-                if (!ModelState.IsValid)
-                    return BadRequest(new ResultViewModel<Transaction>(ModelState.GetErrors()));
-                try
-                {
-                    var transaction = await context.Transactions.FirstOrDefaultAsync(x => x.Id == id);
-                    if (transaction == null)
-                        return NotFound(new ResultViewModel<Transaction>("Conteúdo não encontrado"));
-                    transaction.Description = model.Description;
-                    transaction.Amount = model.Amount;
-                    transaction.Date = model.Date;
-                    transaction.CategoryId = model.CategoryId;
-                    transaction.UserId = model.UserId;
-                    context.Transactions.Update(transaction);
-                    await context.SaveChangesAsync();
-                    return Ok(new ResultViewModel<Transaction>(transaction));
-                }
-                catch
-                {
-                    return StatusCode(500, new ResultViewModel<Transaction>("Falha interna no servidor"));
-                }
+                var transaction = await context.Transactions.FirstOrDefaultAsync(x => x.Id == id);
+                if (transaction == null)
+                    return NotFound(new ResultViewModel<Transaction>("Conteúdo não encontrado"));
+                transaction.Description = model.Description;
+                transaction.Amount = model.Amount;
+                transaction.Date = model.Date;
+                transaction.CategoryId = model.CategoryId;
+                transaction.UserId = model.UserId;
+                context.Transactions.Update(transaction);
+                await context.SaveChangesAsync();
+                return Ok(new ResultViewModel<Transaction>(transaction));
             }
-            [HttpDelete("transactions/{id:int}")]
-            public async Task<IActionResult> DeleteAsync(
-                [FromRoute] int id,
-                [FromServices] TFDataContext context)
+            catch
             {
-                try
-                {
-                    var transaction = await context.Transactions.FirstOrDefaultAsync(x => x.Id == id);
-                    if (transaction == null)
-                        return NotFound(new ResultViewModel<Transaction>("Conteúdo não encontrado"));
-                    context.Transactions.Remove(transaction);
-                    await context.SaveChangesAsync();
-                    return Ok(new ResultViewModel<Transaction>(transaction));
-                }
-                catch
-                {
-                    return StatusCode(500, new ResultViewModel<Transaction>("Falha interna no servidor"));
-                }
+                return StatusCode(500, new ResultViewModel<Transaction>("Falha interna no servidor"));
             }
+        }
+        [HttpDelete("transactions/{id:int}")]
+        public async Task<IActionResult> DeleteAsync(
+            [FromRoute] int id,
+            [FromServices] TFDataContext context)
+        {
+            try
+            {
+                var transaction = await context.Transactions.FirstOrDefaultAsync(x => x.Id == id);
+                if (transaction == null)
+                    return NotFound(new ResultViewModel<Transaction>("Conteúdo não encontrado"));
+                context.Transactions.Remove(transaction);
+                await context.SaveChangesAsync();
+                return Ok(new ResultViewModel<Transaction>(transaction));
+            }
+            catch
+            {
+                return StatusCode(500, new ResultViewModel<Transaction>("Falha interna no servidor"));
+            }
+        }
 
 
 
-
-
-
-
-
-
-
-
-
-
-        }               
-
-
-
-
-
-
-
-
-
+    }
+}
