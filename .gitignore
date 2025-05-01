@@ -5,7 +5,7 @@
 
 # security
 appsettings.Development.json
-secrets.json
+appsettings.json
 
 
 # User-specific files
