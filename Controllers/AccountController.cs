@@ -1,40 +1,51 @@
 namespace TF.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Identity;
+    using TF.Services;
     using Microsoft.EntityFrameworkCore;
     using TF.Data;
-    using TF.Models;
-    using TF.Services;
     using System.Threading.Tasks;
+    using TF.Extensions;
+    using TF.ViewModels;
+    using Microsoft.AspNetCore.Identity;
+    using TF.Models;
 
     [Route("api/[controller]")]
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly TFDataContext _context;
-        private readonly TokenServices _tokenServices;
-        public AccountController(TFDataContext context, TokenServices tokenServices)
+       [HttpPost("login")]
+        public async Task<IActionResult> Login(
+       [FromBody] LoginViewModel model,
+       [FromServices] TFDataContext context,
+       [FromServices] TokenService tokenService)
         {
-            _context = context;
-            _tokenServices = tokenServices;
-        }
-        [HttpPost("register")]
-        public async Task<IActionResult> Register(User user)
-        {
-            if (await UserExists(user.Name))
-                return BadRequest("User already exists");
+            if (!ModelState.IsValid)
+                return BadRequest(new ResultViewModel<string>(ModelState.GetErrors()));
 
-            var passwordHash = new PasswordHasher<User>();
-            user.PasswordHash = passwordHash.HashPassword(user, user.PasswordHash);
-            _context.Users.Add(user);
+            var user = await context
+                .Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Email == model.Email);
 
-            await _context.SaveChangesAsync();
-            return Ok(new { token = _tokenServices.GenerateToken(user) });
-        }
-        private async Task<bool> UserExists(string username)
-        {
-            return await _context.Users.AnyAsync(x => x.Name == username.ToLower());
+            if (user == null)
+                return StatusCode(401, new ResultViewModel<string>("Usuário ou senha inválidos"));
+
+            var passwordHasher = new PasswordHasher<User>();
+            var result = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, model.Password);
+
+            if (result == PasswordVerificationResult.Failed)
+                return StatusCode(401, new ResultViewModel<string>("Usuário ou senha inválidos"));
+
+            try
+            {
+                var token = tokenService.GenerateToken(user);
+                return Ok(new ResultViewModel<string>(token, null));
+            }
+            catch
+            {
+                return StatusCode(500, new ResultViewModel<string>("05X04 - Falha interna no servidor"));
+            }
         }
     }
 }

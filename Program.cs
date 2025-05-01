@@ -9,7 +9,7 @@ builder.Services.AddDbContext<TFDataContext>(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<TFDataContext>();
-builder.Services.AddTransient<TokenServices>();
+builder.Services.AddTransient<TokenService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
