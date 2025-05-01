@@ -1,4 +1,4 @@
-namespace TF
+namespace TF.Configuration
 {
     public class Configuration
     {
