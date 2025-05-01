@@ -22,7 +22,7 @@ namespace TF.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(User user)
         {
-            if (await UserExists(user.UserName))
+            if (await UserExists(user.Name))
                 return BadRequest("User already exists");
 
             var passwordHash = new PasswordHasher<User>();
@@ -34,7 +34,7 @@ namespace TF.Controllers
         }
         private async Task<bool> UserExists(string username)
         {
-            return await _context.Users.AnyAsync(x => x.UserName == username.ToLower());
+            return await _context.Users.AnyAsync(x => x.Name == username.ToLower());
         }
     }
 }
