@@ -2,6 +2,7 @@ using TF.Models;
 using Microsoft.EntityFrameworkCore;
 using TF.Data.Mappings;
 
+
 namespace TF.Data
 {
     public class TFDataContext : DbContext
