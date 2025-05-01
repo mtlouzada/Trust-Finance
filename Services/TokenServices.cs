@@ -8,7 +8,7 @@ namespace TF.Services
     using TF.Configuration;
     using TF.Data;
 
-    public class TokenServices
+    public class TokenService
     {
         public string GenerateToken(User user)
         {
