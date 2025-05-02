@@ -8,6 +8,7 @@ namespace TF.Controllers
     using TF.Extensions;
     using System.Security.Cryptography;
     using System.Text;
+    using Microsoft.AspNetCore.Identity;
 
     [Route("api/[controller]")]
     [ApiController]
@@ -60,8 +61,13 @@ namespace TF.Controllers
                 {
                     Name = model.Name,
                     Email = model.Email,
-                    PasswordHash = HashPassword(model.Password)
+                    Image = model.Image,
+                    Slug = model.Slug
                 };
+
+                var passwordHasher = new PasswordHasher<User>();
+                user.PasswordHash = passwordHasher.HashPassword(user, model.Password);
+
                 await context.Users.AddAsync(user);
                 await context.SaveChangesAsync();
                 return Created($"api/users/{user.Id}", new ResultViewModel<User>(user));

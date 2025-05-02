@@ -42,10 +42,11 @@ namespace TF.Controllers
                 var token = tokenService.GenerateToken(user);
                 return Ok(new ResultViewModel<string>(token, null));
             }
-            catch
+            catch (Exception ex)
             {
-                return StatusCode(500, new ResultViewModel<string>("05X04 - Falha interna no servidor"));
+                return StatusCode(500, new ResultViewModel<string>($"05X04 - Falha interna no servidor: {ex.Message}"));
             }
+
         }
     }
 }
