@@ -14,7 +14,42 @@ namespace TF.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-       [HttpPost("login")]
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(
+            [FromBody] RegisterUserViewModel model,
+            [FromServices] TFDataContext context)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new ResultViewModel<User>(ModelState.GetErrors()));
+
+            try
+            {
+                var user = new User
+                {
+                    Name = model.Name,
+                    Email = model.Email,
+                    Image = model.Image,
+                    Slug = model.Slug,
+                    Role = "user"
+                };
+
+                var passwordHasher = new PasswordHasher<User>();
+                user.PasswordHash = passwordHasher.HashPassword(user, model.Password);
+
+                await context.Users.AddAsync(user);
+                await context.SaveChangesAsync();
+                return Created($"api/users/{user.Id}", new ResultViewModel<User>(user));
+            }
+            catch (DbUpdateException e)
+            {
+                return StatusCode(400, new ResultViewModel<User>($"05X03 - {e.InnerException.Message}"));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, new ResultViewModel<User>($"05X04 - Falha interna no servidor: {e.Message}"));
+            }
+        }
+        [HttpPost("login")]
         public async Task<IActionResult> Login(
        [FromBody] LoginViewModel model,
        [FromServices] TFDataContext context,
