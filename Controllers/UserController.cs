@@ -8,7 +8,6 @@ namespace TF.Controllers
     using TF.Extensions;
     using System.Security.Cryptography;
     using System.Text;
-    using Microsoft.AspNetCore.Identity;
 
     [Route("api/[controller]")]
     [ApiController]
@@ -47,41 +46,6 @@ namespace TF.Controllers
                 return StatusCode(500, new ResultViewModel<User>("Falha interna no servidor"));
             }
         }
-        [HttpPost("users")]
-        public async Task<IActionResult> PostAsync(
-            [FromBody] EditorUserViewModel model,
-            [FromServices] TFDataContext context)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(new ResultViewModel<User>(ModelState.GetErrors()));
-
-            try
-            {
-                var user = new User
-                {
-                    Name = model.Name,
-                    Email = model.Email,
-                    Image = model.Image,
-                    Slug = model.Slug
-                };
-
-                var passwordHasher = new PasswordHasher<User>();
-                user.PasswordHash = passwordHasher.HashPassword(user, model.Password);
-
-                await context.Users.AddAsync(user);
-                await context.SaveChangesAsync();
-                return Created($"api/users/{user.Id}", new ResultViewModel<User>(user));
-            }
-            catch (DbUpdateException e)
-            {
-                return StatusCode(400, new ResultViewModel<User>($"05X03 - {e.InnerException.Message}"));
-            }
-            catch (Exception e)
-            {
-                return StatusCode(500, new ResultViewModel<User>($"05X04 - Falha interna no servidor: { e.Message }"));
-            }
-        }
-
         private string HashPassword(string password)
         {
             using (var sha256 = SHA256.Create())
@@ -95,7 +59,7 @@ namespace TF.Controllers
         [HttpPut("users/{id:int}")]
         public async Task<IActionResult> PutAsync(
             [FromRoute] int id,
-            [FromBody] EditorUserViewModel model,
+            [FromBody] RegisterUserViewModel model,
             [FromServices] TFDataContext context)
         {
             if (!ModelState.IsValid)
