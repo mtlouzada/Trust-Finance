@@ -8,11 +8,13 @@ namespace TF.Controllers
     using TF.Extensions;
     using System.Security.Cryptography;
     using System.Text;
+    using Microsoft.AspNetCore.Authorization;
 
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
+        [Authorize(Roles = "admin")]
         [HttpGet("users")]
         public async Task<IActionResult> GetAsync(
             [FromServices] TFDataContext context)
@@ -27,6 +29,8 @@ namespace TF.Controllers
                 return StatusCode(500, new ResultViewModel<List<User>>("05X04 - Falha interna no servidor"));
             }
         }
+
+        [Authorize(Roles = "admin")]
         [HttpGet("users/{id:int}")]
         public async Task<IActionResult> GetByIdAsync(
             [FromRoute] int id,
@@ -56,6 +60,7 @@ namespace TF.Controllers
             }
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut("users/{id:int}")]
         public async Task<IActionResult> PutAsync(
             [FromRoute] int id,
@@ -86,6 +91,8 @@ namespace TF.Controllers
                 return StatusCode(500, new ResultViewModel<User>($"05X04 - Falha interna no servidor: {e.Message}"));
             }
         }
+
+        [Authorize(Roles = "admin")]
         [HttpDelete("users/{id:int}")]
         public async Task<IActionResult> DeleteAsync(
             [FromRoute] int id,
