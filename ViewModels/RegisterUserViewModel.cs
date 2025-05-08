@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TF.ViewModels
 {
-    public class EditorUserViewModel
+    public class RegisterUserViewModel
     {
         [Required(ErrorMessage = "O nome é obrigatório")]
         [StringLength(40, MinimumLength = 3, ErrorMessage = "Este campo deve conter entre 3 e 40 caracteres")]
