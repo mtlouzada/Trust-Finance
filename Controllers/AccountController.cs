@@ -30,7 +30,7 @@ namespace TF.Controllers
                     Email = model.Email,
                     Image = model.Image,
                     Slug = model.Slug,
-                    Role = "user"
+                    Role = "admin"
                 };
 
                 var passwordHasher = new PasswordHasher<User>();
