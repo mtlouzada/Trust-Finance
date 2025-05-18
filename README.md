@@ -1,6 +1,6 @@
 # Trust-Finance - API de Controle Financeiro
 
-Esta é uma API REST desenvolvida com ASP.NET Core, voltada para controle financeiro pessoal. O projeto ainda está em desenvolvimento, mas já conta com funcionalidades básicas como cadastro de categorias e usuários, além de validação e tratamento de erros com ViewModels e Extensions.
+Esta é uma API REST desenvolvida com ASP.NET Core, voltada para controle financeiro pessoal. O projeto ainda está em desenvolvimento, mas já conta com funcionalidades como cadastro de categorias e usuários, autenticação com JWT, documentação interativa via Swagger, e testes de unidade em andamento com MSTest.
 
 ---
 
@@ -12,8 +12,10 @@ Esta é uma API REST desenvolvida com ASP.NET Core, voltada para controle finance
 - SQL Server
 - FluentValidation (via Data Annotations)
 - SHA256 para hash de senhas
-- Swagger (em breve)
-  
+- Swagger
+- Autenticação com Token JWT
+- MSTest (testes de unidade)
+
 ---
 
 ## Estrutura do Projeto
@@ -23,6 +25,8 @@ Esta é uma API REST desenvolvida com ASP.NET Core, voltada para controle finance
 - `Controllers/` – Controladores responsáveis pelos endpoints da aplicação.
 - `Extensions/` – Métodos de extensão, como tratamento de erros de `ModelState`.
 - `Data/` – Contexto do Entity Framework (`TFDataContext`).
+- `Services/` – Regras de negócio e serviços auxiliares (como geração de tokens).
+- `Tests/` – Projeto de testes de unidade utilizando MSTest.
 
 ---
 
@@ -42,7 +46,24 @@ Esta é uma API REST desenvolvida com ASP.NET Core, voltada para controle finance
 - **GET /api/users/{id}** – Retorna um usuário específico.
 - **POST /api/users** – Cria um novo usuário com validação de nome, email e senha.
 
-> A senha é armazenada com hash SHA256 por enquanto. Futuramente será implementada autenticação com tokens JWT e validação segura com hasher mais robusto.
+### Autenticação
+
+- **POST /api/account/login** – Autentica um usuário e retorna um token JWT.
+- **POST /api/account/register** – Registra um novo usuário com validação de dados.
+
+> As senhas são armazenadas com hash SHA256. A autenticação utiliza tokens JWT, protegendo rotas privadas com base em roles.
+
+---
+
+## Swagger
+
+A documentação da API está disponível via Swagger, permitindo explorar e testar os endpoints diretamente pelo navegador, após iniciar a aplicação.
+
+---
+
+## Testes de Unidade
+
+O projeto conta com testes de unidade em desenvolvimento utilizando MSTest. O objetivo é validar os fluxos principais, como criação de contas, autenticação e manipulação de categorias.
 
 ---
 
@@ -64,8 +85,6 @@ As respostas da API seguem um padrão utilizando `ResultViewModel<T>`, facilitand
 ```
 
 ## Funcionalidades em desenvolvimento
- - Autenticação com Token JWT
-
  - Cadastro de transações financeiras
 
  - Filtros por data e tipo de transação
@@ -73,6 +92,8 @@ As respostas da API seguem um padrão utilizando `ResultViewModel<T>`, facilitand
  - Dashboard de resumo financeiro
 
  - Controle de permissões
+
+ - Expansão dos testes automatizados
 
 ## Como rodar o projeto
 1. Clone o repositório:
@@ -95,6 +116,3 @@ dotnet ef database update
 dotnet run
 ```
 |
-
-### YOLO Commit
-Essa linha foi adicionada sem revisão alguma, só vai!
