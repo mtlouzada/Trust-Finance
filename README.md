@@ -95,3 +95,6 @@ dotnet ef database update
 dotnet run
 ```
 |
+
+### YOLO Commit
+Essa linha foi adicionada sem revisão alguma, só vai!
