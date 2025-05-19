@@ -1,77 +1,77 @@
 # Trust-Finance - API de Controle Financeiro
 
-Esta È uma API REST desenvolvida com ASP.NET Core, voltada para controle financeiro pessoal. O projeto ainda est· em desenvolvimento, mas j· conta com funcionalidades como cadastro de categorias e usu·rios, autenticaÁ„o com JWT, documentaÁ„o interativa via Swagger, e testes de unidade em andamento com MSTest.
+Esta √© uma API REST desenvolvida com ASP.NET Core, voltada para controle financeiro pessoal. O projeto ainda est√° em desenvolvimento, mas j√° conta com funcionalidades como cadastro de categorias e usu√°rios, autentica√ß√£o com JWT, documenta√ß√£o interativa via Swagger, e testes de unidade em andamento com MSTest.
 
 ---
 
 ## Tecnologias Utilizadas
 
-- .NET 6
+- .NET 8
 - ASP.NET Core Web API
 - Entity Framework Core
 - SQL Server
 - FluentValidation (via Data Annotations)
 - SHA256 para hash de senhas
 - Swagger
-- AutenticaÁ„o com Token JWT
+- Autentica√ß√£o com Token JWT
 - MSTest (testes de unidade)
 
 ---
 
 ## Estrutura do Projeto
 
-- `Models/` ñ Classes que representam as entidades do banco de dados (User, Category, etc).
-- `ViewModels/` ñ Classes para validaÁ„o e transporte seguro de dados entre a API e o cliente.
-- `Controllers/` ñ Controladores respons·veis pelos endpoints da aplicaÁ„o.
-- `Extensions/` ñ MÈtodos de extens„o, como tratamento de erros de `ModelState`.
-- `Data/` ñ Contexto do Entity Framework (`TFDataContext`).
-- `Services/` ñ Regras de negÛcio e serviÁos auxiliares (como geraÁ„o de tokens).
-- `Tests/` ñ Projeto de testes de unidade utilizando MSTest.
+- `Models/` ‚Äì Classes que representam as entidades do banco de dados (User, Category, etc).
+- `ViewModels/` ‚Äì Classes para valida√ß√£o e transporte seguro de dados entre a API e o cliente.
+- `Controllers/` ‚Äì Controladores respons√°veis pelos endpoints da aplica√ß√£o.
+- `Extensions/` ‚Äì M√©todos de extens√£o, como tratamento de erros de `ModelState`.
+- `Data/` ‚Äì Contexto do Entity Framework (`TFDataContext`).
+- `Services/` ‚Äì Regras de neg√≥cio e servi√ßos auxiliares (como gera√ß√£o de tokens).
+- `Tests/` ‚Äì Projeto de testes de unidade utilizando MSTest.
 
 ---
 
-## Funcionalidades j· implementadas
+## Funcionalidades j√° implementadas
 
 ### Categories
 
-- **GET /api/categories** ñ Lista todas as categorias.
-- **GET /api/categories/{id}** ñ Retorna uma categoria especÌfica.
-- **POST /api/categories** ñ Cria uma nova categoria.
-- **PUT /api/categories/{id}** ñ Atualiza uma categoria existente.
-- **DELETE /api/categories/{id}** ñ Remove uma categoria.
+- **GET /api/categories** ‚Äì Lista todas as categorias.
+- **GET /api/categories/{id}** ‚Äì Retorna uma categoria espec√≠fica.
+- **POST /api/categories** ‚Äì Cria uma nova categoria.
+- **PUT /api/categories/{id}** ‚Äì Atualiza uma categoria existente.
+- **DELETE /api/categories/{id}** ‚Äì Remove uma categoria.
 
 ### Users
 
-- **GET /api/users** ñ Lista todos os usu·rios.
-- **GET /api/users/{id}** ñ Retorna um usu·rio especÌfico.
-- **POST /api/users** ñ Cria um novo usu·rio com validaÁ„o de nome, email e senha.
+- **GET /api/users** ‚Äì Lista todos os usu√°rios.
+- **GET /api/users/{id}** ‚Äì Retorna um usu√°rio espec√≠fico.
+- **POST /api/users** ‚Äì Cria um novo usu√°rio com valida√ß√£o de nome, email e senha.
 
-### AutenticaÁ„o
+### Autentica√ß√£o
 
-- **POST /api/account/login** ñ Autentica um usu·rio e retorna um token JWT.
-- **POST /api/account/register** ñ Registra um novo usu·rio com validaÁ„o de dados.
+- **POST /api/account/login** ‚Äì Autentica um usu√°rio e retorna um token JWT.
+- **POST /api/account/register** ‚Äì Registra um novo usu√°rio com valida√ß√£o de dados.
 
-> As senhas s„o armazenadas com hash SHA256. A autenticaÁ„o utiliza tokens JWT, protegendo rotas privadas com base em roles.
+> As senhas s√£o armazenadas com hash SHA256. A autentica√ß√£o utiliza tokens JWT, protegendo rotas privadas com base em roles.
 
 ---
 
 ## Swagger
 
-A documentaÁ„o da API est· disponÌvel via Swagger, permitindo explorar e testar os endpoints diretamente pelo navegador, apÛs iniciar a aplicaÁ„o.
+A documenta√ß√£o da API est√° dispon√≠vel via Swagger, permitindo explorar e testar os endpoints diretamente pelo navegador, ap√≥s iniciar a aplica√ß√£o.
 
 ---
 
 ## Testes de Unidade
 
-O projeto conta com testes de unidade em desenvolvimento utilizando MSTest. O objetivo È validar os fluxos principais, como criaÁ„o de contas, autenticaÁ„o e manipulaÁ„o de categorias.
+O projeto conta com testes de unidade em desenvolvimento utilizando MSTest. O objetivo √© validar os fluxos principais, como cria√ß√£o de contas, autentica√ß√£o e manipula√ß√£o de categorias.
 
 ---
 
 ## Tratamento de Erros
 
-Os erros de validaÁ„o do `ModelState` s„o tratados com uma extension (`ModelStateExtension.cs`), que converte os erros em uma lista de strings para facilitar o retorno ao cliente.
+Os erros de valida√ß√£o do `ModelState` s√£o tratados com uma extension (`ModelStateExtension.cs`), que converte os erros em uma lista de strings para facilitar o retorno ao cliente.
 
-As respostas da API seguem um padr„o utilizando `ResultViewModel<T>`, facilitando o consumo no front-end:
+As respostas da API seguem um padr√£o utilizando `ResultViewModel<T>`, facilitando o consumo no front-end:
 
 ```json
 {
@@ -85,18 +85,18 @@ As respostas da API seguem um padr„o utilizando `ResultViewModel<T>`, facilitand
 ```
 
 ## Funcionalidades em desenvolvimento
- - Cadastro de transaÁıes financeiras
+ - Cadastro de transa√ß√µes financeiras
 
- - Filtros por data e tipo de transaÁ„o
+ - Filtros por data e tipo de transa√ß√£o
 
  - Dashboard de resumo financeiro
 
- - Controle de permissıes
+ - Controle de permiss√µes
 
- - Expans„o dos testes automatizados
+ - Expans√£o dos testes automatizados
 
 ## Como rodar o projeto
-1. Clone o repositÛrio:
+1. Clone o reposit√≥rio:
 
 ```bash
 git clone https://github.com/seu-usuario/tf-api.git
