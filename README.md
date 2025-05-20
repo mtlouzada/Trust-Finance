@@ -10,11 +10,10 @@ Esta é uma API REST desenvolvida com ASP.NET Core, voltada para controle financ
 - ASP.NET Core Web API
 - Entity Framework Core
 - SQL Server
-- FluentValidation (via Data Annotations)
+- FluentValidation
 - SHA256 para hash de senhas
 - Swagger
 - Autenticação com Token JWT
-- MSTest (testes de unidade)
 
 ---
 
@@ -26,7 +25,6 @@ Esta é uma API REST desenvolvida com ASP.NET Core, voltada para controle financ
 - `Extensions/` – Métodos de extensão, como tratamento de erros de `ModelState`.
 - `Data/` – Contexto do Entity Framework (`TFDataContext`).
 - `Services/` – Regras de negócio e serviços auxiliares (como geração de tokens).
-- `Tests/` – Projeto de testes de unidade utilizando MSTest.
 
 ---
 
@@ -34,22 +32,21 @@ Esta é uma API REST desenvolvida com ASP.NET Core, voltada para controle financ
 
 ### Categories
 
-- **GET /api/categories** – Lista todas as categorias.
-- **GET /api/categories/{id}** – Retorna uma categoria específica.
-- **POST /api/categories** – Cria uma nova categoria.
-- **PUT /api/categories/{id}** – Atualiza uma categoria existente.
-- **DELETE /api/categories/{id}** – Remove uma categoria.
+– Lista todas as categorias.
+– Retorna uma categoria específica.
+– Cria uma nova categoria.
+- Atualiza uma categoria existente.
+– Remove uma categoria.
 
 ### Users
 
-- **GET /api/users** – Lista todos os usuários.
-- **GET /api/users/{id}** – Retorna um usuário específico.
-- **POST /api/users** – Cria um novo usuário com validação de nome, email e senha.
+- Lista todos os usuários.
+- Retorna um usuário específico.
 
 ### Autenticação
 
-- **POST /api/account/login** – Autentica um usuário e retorna um token JWT.
-- **POST /api/account/register** – Registra um novo usuário com validação de dados.
+– Registra um novo usuário com validação de dados.
+– Autentica um usuário e retorna um token JWT.
 
 > As senhas são armazenadas com hash SHA256. A autenticação utiliza tokens JWT, protegendo rotas privadas com base em roles.
 
@@ -60,29 +57,6 @@ Esta é uma API REST desenvolvida com ASP.NET Core, voltada para controle financ
 A documentação da API está disponível via Swagger, permitindo explorar e testar os endpoints diretamente pelo navegador, após iniciar a aplicação.
 
 ---
-
-## Testes de Unidade
-
-O projeto conta com testes de unidade em desenvolvimento utilizando MSTest. O objetivo é validar os fluxos principais, como criação de contas, autenticação e manipulação de categorias.
-
----
-
-## Tratamento de Erros
-
-Os erros de validação do `ModelState` são tratados com uma extension (`ModelStateExtension.cs`), que converte os erros em uma lista de strings para facilitar o retorno ao cliente.
-
-As respostas da API seguem um padrão utilizando `ResultViewModel<T>`, facilitando o consumo no front-end:
-
-```json
-{
-  "data": {
-    "id": 1,
-    "name": "Categoria Exemplo",
-    "slug": "categoria-exemplo"
-  },
-  "errors": []
-}
-```
 
 ## Funcionalidades em desenvolvimento
  - Cadastro de transações financeiras
@@ -101,9 +75,25 @@ As respostas da API seguem um padrão utilizando `ResultViewModel<T>`, facilitan
 ```bash
 git clone https://github.com/seu-usuario/tf-api.git
 ```
-2. Abra no Visual Studio ou VS Code.
+2. Abra no Visual Studio.
 
-3. Configure a ConnectionString no appsettings.json.
+3. Crie o arquivo appsettings.json e configure a ConnectionString e JwtKey.
+
+```json
+{
+    "ConnectionStrings": {
+        "DefaultConnection": ""
+    },
+    "Logging": {
+        "LogLevel": {
+            "Default": "Information",
+            "Microsoft.AspNetCore": "Warning"
+        }
+    },
+    "JwtKey": "",
+    "AllowedHosts": "*"
+}
+```
 
 4. Aplique as migrations e crie o banco:
 
