@@ -1,17 +1,15 @@
 # Trust-Finance - API de Controle Financeiro
 
-Esta é uma API REST desenvolvida com ASP.NET Core, voltada para controle financeiro pessoal. O projeto ainda está em desenvolvimento, mas já conta com funcionalidades como cadastro de categorias e usuários, autenticação com JWT, documentação interativa via Swagger, e testes de unidade em andamento com MSTest.
+Trust-Finance é uma API REST construída com .NET 8 e ASP.NET Core, projetada para gerenciar finanças pessoais de forma segura e escalável. O sistema oferece recursos como cadastro de usuários, autenticação via JWT, controle de categorias e transações, além de documentação interativa com Swagger.
 
 ---
 
 ## Tecnologias Utilizadas
 
-- .NET 8
-- ASP.NET Core Web API
-- Entity Framework Core
-- SQL Server
+- .NET 8 + ASP.NET Core Web API
+- Entity Framework Core + SQL Server
 - FluentValidation
-- SHA256 para hash de senhas
+- Hash de senhas com SHA256
 - Swagger
 - Autenticação com Token JWT
 
@@ -28,46 +26,39 @@ Esta é uma API REST desenvolvida com ASP.NET Core, voltada para controle financ
 
 ---
 
-## Funcionalidades já implementadas
+## Funcionalidades implementadas
 
-### Categories
+### Categorias
 
-– Lista todas as categorias.
-– Retorna uma categoria específica.
-– Cria uma nova categoria.
-- Atualiza uma categoria existente.
-– Remove uma categoria.
+- Lista todas as categorias
+- Busca por ID
+- Cria nova categoria
+- Atualiza categoria
+- Remove categoria
 
-### Users
+### Usuários
 
 - Lista todos os usuários.
-- Retorna um usuário específico.
+- Busca por ID
 
 ### Autenticação
 
-– Registra um novo usuário com validação de dados.
-– Autentica um usuário e retorna um token JWT.
+- Registro de novos usuário com validação
+- Login com retorno de token JWT
+- Proteção de rotas com [Authorize] por Role
 
-> As senhas são armazenadas com hash SHA256. A autenticação utiliza tokens JWT, protegendo rotas privadas com base em roles.
+### Transações
 
----
+- Criar transações vinculadas ao usuário autenticado
+- Listar, editar e excluir transações
 
-## Swagger
+> As senhas são protegidas com hash SHA256. A autenticação usa JWT, garantindo acesso apenas a usuários autorizados.
+
+### Swagger
 
 A documentação da API está disponível via Swagger, permitindo explorar e testar os endpoints diretamente pelo navegador, após iniciar a aplicação.
 
 ---
-
-## Funcionalidades em desenvolvimento
- - Cadastro de transações financeiras
-
- - Filtros por data e tipo de transação
-
- - Dashboard de resumo financeiro
-
- - Controle de permissões
-
- - Expansão dos testes automatizados
 
 ## Como rodar o projeto
 1. Clone o repositório:
@@ -105,4 +96,3 @@ dotnet ef database update
 ```bash
 dotnet run
 ```
-|
