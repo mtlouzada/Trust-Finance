@@ -18,7 +18,7 @@ namespace TF.ViewModels
         [Required(ErrorMessage = "Campo obrigatório")]
         public int CategoryId { get; set; }
 
-        [Required(ErrorMessage = "Campo obrigatório")]
-        public int UserId { get; set; }
+        //[Required(ErrorMessage = "Campo obrigatório")]
+        //public int UserId { get; set; }
     }
 }
