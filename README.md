@@ -7,7 +7,9 @@ Trust-Finance é uma API REST construída com .NET 8 e ASP.NET Core, projetada p
 ## Tecnologias Utilizadas
 
 - .NET 8 + ASP.NET Core Web API
-- Entity Framework Core + SQL Server
+- Entity Framework Core 
+- SQL Server
+- Docker + Docker Compose
 - FluentValidation
 - Hash de senhas com SHA256
 - Swagger
@@ -60,13 +62,39 @@ A documentação da API está disponível via Swagger, permitindo explorar e tes
 
 ---
 
+### 🐳 Docker e Docker Compose
+
+O projeto utiliza Docker Compose para padronizar o ambiente de desenvolvimento, facilitando a execução do banco de dados SQL Server sem a necessidade de instalação local.
+
+#### Benefícios do uso de Docker no projeto
+
+- Ambiente reproduzível
+- Banco de dados isolado em container
+- Setup local mais simples
+- Base preparada para testes automatizados e CI/CD
+
+---
+
+### Como rodar o projeto com Docker (recomendado)
+
+#### Pré-requisitos
+
+- Docker
+- Docker Compose
+- .NET SDK 8.x
+
+---
+
 ## Como rodar o projeto
 1. Clone o repositório:
 
 ```bash
 git clone https://github.com/seu-usuario/tf-api.git
 ```
-2. Abra no Visual Studio.
+2. Suba o banco de dados com Docker Compose:
+```bash
+docker compose up -d
+```
 
 3. Crie o arquivo appsettings.json e configure a ConnectionString e JwtKey.
 
@@ -95,4 +123,9 @@ dotnet ef database update
 5. Rode o projeto:
 ```bash
 dotnet run
+```
+
+6. Acesse o Swagger :
+```bash
+http://localhost:5151/swagger
 ```
