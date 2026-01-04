@@ -4,23 +4,23 @@ namespace TF.ViewModels
 {
     public class RegisterUserViewModel
     {
-        [Required(ErrorMessage = "O nome È obrigatÛrio")]
+        [Required(ErrorMessage = "O nome √© obrigat√≥rio")]
         [StringLength(40, MinimumLength = 3, ErrorMessage = "Este campo deve conter entre 3 e 40 caracteres")]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
-        [Required(ErrorMessage = "O email È obrigatÛrio")]
-        [EmailAddress(ErrorMessage = "Email inv·lido")]
-        public string Email { get; set; }
+        [Required(ErrorMessage = "O email √© obrigat√≥rio")]
+        [EmailAddress(ErrorMessage = "Email inv√°lido")]
+        public required string Email { get; set; }
 
-        [Required(ErrorMessage = "A senha È obrigatÛria")]
+        [Required(ErrorMessage = "A senha √© obrigat√≥ria")]
         [StringLength(20, MinimumLength = 6, ErrorMessage = "A senha deve conter entre 6 e 20 caracteres")]
-        public string Password { get; set; }
+        public required string Password { get; set; }
 
-        [Required(ErrorMessage = "A imagem È obrigatÛria")]
-        [Url(ErrorMessage = "A imagem deve ser uma URL v·lida")]
-        public string Image { get; set; } = string.Empty;
+        [Required(ErrorMessage = "A imagem √© obrigat√≥ria")]
+        [Url(ErrorMessage = "A imagem deve ser uma URL v√°lida")]
+        public required string Image { get; set; }
 
-        [Required(ErrorMessage = "O slug È obrigatÛrio")]
-        public string Slug { get; set; } = string.Empty;
+        [Required(ErrorMessage = "O slug √© obrigat√≥rio")]
+        public required string Slug { get; set; }
     }
 }
