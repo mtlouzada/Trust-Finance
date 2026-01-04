@@ -29,4 +29,28 @@ public class AccountController : ControllerBase
             return BadRequest(new ResultViewModel<User>(e.Message));
         }
     }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(
+       [FromBody] LoginViewModel model,
+       [FromServices] AccountService service,
+       [FromServices] TokenService tokenService)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(new ResultViewModel<string>(ModelState.GetErrors()));
+
+        try
+        {
+            var token = await service.LoginAsync(model, tokenService);
+            return Ok(new ResultViewModel<string>(token));
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            return Unauthorized(new ResultViewModel<string>(e.Message));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new ResultViewModel<string>("Erro interno ao realizar login"));
+        }
+    }
 }

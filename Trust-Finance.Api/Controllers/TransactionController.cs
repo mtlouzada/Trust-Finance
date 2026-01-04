@@ -1,147 +1,105 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using TF.Models;
-using TF.Data;
-using TF.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 using TF.Extensions;
+using TF.ViewModels;
+using TF.Models;
+using Trust_Finance.Services;
 
-namespace TF.Controllers
+namespace Trust_Finance.Controllers;
+
+[ApiController]
+[Route("api/transactions")]
+[Authorize]
+public class TransactionController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class TransactionController : ControllerBase
+    [HttpGet]
+    public async Task<IActionResult> Get(
+        [FromServices] TransactionService service)
     {
-        [HttpGet("transactions")]
-        public async Task<IActionResult> GetAsync([FromServices] TFDataContext context)
-        {
-            try
-            {
-                var userId = User.GetUserId();
-                var transactions = await context
-                    .Transactions
-                    .Where(t => t.UserId == userId)
-                    .ToListAsync();
+        var userId = User.GetUserId();
+        var transactions = await service.GetAllAsync(userId);
+        return Ok(new ResultViewModel<List<Transaction>>(transactions));
+    }
 
-                return Ok(new ResultViewModel<List<Transaction>>(transactions));
-            }
-            catch
-            {
-                return StatusCode(500, new ResultViewModel<List<Transaction>>("05X04 - Falha interna no servidor"));
-            }
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(
+        int id,
+        [FromServices] TransactionService service)
+    {
+        var userId = User.GetUserId();
+        var transaction = await service.GetByIdAsync(id, userId);
+
+        if (transaction == null)
+            return NotFound(new ResultViewModel<Transaction>("Conteúdo não encontrado"));
+
+        return Ok(new ResultViewModel<Transaction>(transaction));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Post(
+        [FromBody] EditorTransactionViewModel model,
+        [FromServices] TransactionService service)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(new ResultViewModel<Transaction>(ModelState.GetErrors()));
+
+        var userId = User.GetUserId();
+
+        var transaction = await service.CreateAsync(
+            model.Description,
+            model.Amount,
+            model.Date,
+            model.CategoryId,
+            userId);
+
+        return Created(
+            $"api/transactions/{transaction.Id}",
+            new ResultViewModel<Transaction>(transaction));
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Put(
+        int id,
+        [FromBody] EditorTransactionViewModel model,
+        [FromServices] TransactionService service)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(new ResultViewModel<Transaction>(ModelState.GetErrors()));
+
+        try
+        {
+            var userId = User.GetUserId();
+
+            var transaction = await service.UpdateAsync(
+                id,
+                model.Description,
+                model.Amount,
+                model.Date,
+                model.CategoryId,
+                userId);
+
+            return Ok(new ResultViewModel<Transaction>(transaction));
         }
-
-        [HttpGet("transactions/{id:int}")]
-        public async Task<IActionResult> GetByIdAsync([FromRoute] int id, [FromServices] TFDataContext context)
+        catch (KeyNotFoundException)
         {
-            try
-            {
-                var userId = User.GetUserId();
-                var transaction = await context
-                    .Transactions
-                    .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
-
-                if (transaction == null)
-                    return NotFound(new ResultViewModel<Transaction>("Conteúdo não encontrado"));
-
-                return Ok(new ResultViewModel<Transaction>(transaction));
-            }
-            catch
-            {
-                return StatusCode(500, new ResultViewModel<Transaction>("Falha interna no servidor"));
-            }
+            return NotFound(new ResultViewModel<Transaction>("Conteúdo não encontrado"));
         }
+    }
 
-        [HttpPost("transactions")]
-        public async Task<IActionResult> PostAsync(
-            [FromBody] EditorTransactionViewModel model,
-            [FromServices] TFDataContext context)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(
+        int id,
+        [FromServices] TransactionService service)
+    {
+        try
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new ResultViewModel<Transaction>(ModelState.GetErrors()));
-
-            try
-            {
-                var transaction = new Transaction
-                {
-                    Description = model.Description,
-                    Amount = model.Amount,
-                    Date = model.Date,
-                    CategoryId = model.CategoryId,
-                    UserId = User.GetUserId(),
-                };
-
-                await context.Transactions.AddAsync(transaction);
-                await context.SaveChangesAsync();
-
-                return Created($"api/transactions/{transaction.Id}", new ResultViewModel<Transaction>(transaction));
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = ex.Message });
-            }
+            var userId = User.GetUserId();
+            var transaction = await service.DeleteAsync(id, userId);
+            return Ok(new ResultViewModel<Transaction>(transaction));
         }
-
-        [HttpPut("transactions/{id:int}")]
-        public async Task<IActionResult> PutAsync(
-            [FromRoute] int id,
-            [FromBody] EditorTransactionViewModel model,
-            [FromServices] TFDataContext context)
+        catch (KeyNotFoundException)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new ResultViewModel<Transaction>(ModelState.GetErrors()));
-
-            try
-            {
-                var userId = User.GetUserId();
-                var transaction = await context
-                    .Transactions
-                    .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
-
-                if (transaction == null)
-                    return NotFound(new ResultViewModel<Transaction>("Conteúdo não encontrado"));
-
-                transaction.Description = model.Description;
-                transaction.Amount = model.Amount;
-                transaction.Date = model.Date;
-                transaction.CategoryId = model.CategoryId;
-
-                context.Transactions.Update(transaction);
-                await context.SaveChangesAsync();
-
-                return Ok(new ResultViewModel<Transaction>(transaction));
-            }
-            catch
-            {
-                return StatusCode(500, new ResultViewModel<Transaction>("Falha interna no servidor"));
-            }
-        }
-
-        [HttpDelete("transactions/{id:int}")]
-        public async Task<IActionResult> DeleteAsync(
-            [FromRoute] int id,
-            [FromServices] TFDataContext context)
-        {
-            try
-            {
-                var userId = User.GetUserId();
-                var transaction = await context
-                    .Transactions
-                    .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
-
-                if (transaction == null)
-                    return NotFound(new ResultViewModel<Transaction>("Conteúdo não encontrado"));
-
-                context.Transactions.Remove(transaction);
-                await context.SaveChangesAsync();
-
-                return Ok(new ResultViewModel<Transaction>(transaction));
-            }
-            catch
-            {
-                return StatusCode(500, new ResultViewModel<Transaction>("Falha interna no servidor"));
-            }
+            return NotFound(new ResultViewModel<Transaction>("Conteúdo não encontrado"));
         }
     }
 }

@@ -41,8 +41,10 @@ namespace TF.Controllers
                 var user = await context
                     .Users
                     .FirstOrDefaultAsync(x => x.Id == id);
+
                 if (user == null)
-                    return NotFound(new ResultViewModel<User>("Conteúdo não encontrado"));
+                    return NotFound(new ResultViewModel<User>("ConteÃºdo nÃ£o encontrado"));
+
                 return Ok(new ResultViewModel<User>(user));
             }
             catch
@@ -50,6 +52,7 @@ namespace TF.Controllers
                 return StatusCode(500, new ResultViewModel<User>("Falha interna no servidor"));
             }
         }
+
         private string HashPassword(string password)
         {
             using (var sha256 = SHA256.Create())
@@ -69,22 +72,27 @@ namespace TF.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(new ResultViewModel<User>(ModelState.GetErrors()));
+
             try
             {
                 var user = await context.Users.FirstOrDefaultAsync(x => x.Id == id);
                 if (user == null)
-                    return NotFound(new ResultViewModel<User>("Conteúdo não encontrado"));
+                    return NotFound(new ResultViewModel<User>("ConteÃºdo nÃ£o encontrado"));
+
                 user.Name = model.Name;
                 user.Email = model.Email;
                 user.Image = model.Image;
                 user.Slug = model.Slug;
+
                 context.Users.Update(user);
                 await context.SaveChangesAsync();
+
                 return Ok(new ResultViewModel<User>(user));
             }
             catch (DbUpdateConcurrencyException e)
             {
-                return StatusCode(400, new ResultViewModel<User>($"05X03 - {e.InnerException.Message}"));
+                var details = e.InnerException?.Message ?? e.Message;
+                return StatusCode(400, new ResultViewModel<User>($"05X03 - {details}"));
             }
             catch (Exception e)
             {
@@ -102,14 +110,17 @@ namespace TF.Controllers
             {
                 var user = await context.Users.FirstOrDefaultAsync(x => x.Id == id);
                 if (user == null)
-                    return NotFound(new ResultViewModel<User>("Conteúdo não encontrado"));
+                    return NotFound(new ResultViewModel<User>("ConteÃºdo nÃ£o encontrado"));
+
                 context.Users.Remove(user);
                 await context.SaveChangesAsync();
+
                 return Ok(new ResultViewModel<User>(user));
             }
             catch (DbUpdateConcurrencyException e)
             {
-                return StatusCode(400, new ResultViewModel<User>($"05X03 - {e.InnerException.Message}"));
+                var details = e.InnerException?.Message ?? e.Message;
+                return StatusCode(400, new ResultViewModel<User>($"05X03 - {details}"));
             }
             catch (Exception e)
             {
