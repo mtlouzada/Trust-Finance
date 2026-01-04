@@ -7,6 +7,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// DbContext
 builder.Services.AddDbContext<TFDataContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -14,12 +15,15 @@ builder.Services.AddDbContext<TFDataContext>(options =>
     )
 );
 
+// Services
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddTransient<TokenService>();
+builder.Services.AddTransient<AccountService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
+// Swagger
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "TF API", Version = "v1" });
@@ -48,6 +52,12 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// JWT key validation (removes CS8604)
+var jwtKey = builder.Configuration["JwtKey"];
+if (string.IsNullOrWhiteSpace(jwtKey))
+    throw new InvalidOperationException("JwtKey não configurada. Defina a chave no appsettings ou nas variáveis de ambiente.");
+
+// Authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -59,7 +69,7 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.ASCII.GetBytes(builder.Configuration["JwtKey"])
+            Encoding.ASCII.GetBytes(jwtKey)
         ),
         ValidateIssuer = false,
         ValidateAudience = false
