@@ -1,44 +1,41 @@
 ﻿using FluentAssertions;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using TF.Models;
+using Trust_Finance.Services;
 using Trust_Finance.Tests.Fixtures;
+using Xunit;
 
-namespace Trust_Finance.Tests.Services
+namespace Trust_Finance.Tests.Services;
+
+public class CategoryServiceTests
 {
-    public class CategoryServiceTests
+    [Fact]
+    public async Task Create_Should_Add_Category()
     {
+        var context = DbContextFixture.CreateContext(Guid.NewGuid().ToString());
+        var service = new CategoryService(context);
 
-        [Fact]
-        public async Task Create_Should_Add_Category()
-        {
-            var context = DbContextFixture.CreateContext(Guid.NewGuid().ToString());
-            var service = new CategoryService(context);
+        var category = await service.CreateAsync("Alimentação", "alimentacao");
 
-            var category = await service.CreateAsync("Alimentação", "alimentacao");
+        category.Should().NotBeNull();
+        category.Name.Should().Be("Alimentação");
 
-            category.Should().NotBeNull();
-            category.Name.Should().Be("Alimentação");
+        context.Categories.Count().Should().Be(1);
+    }
 
-            context.Categories.Should().HaveCount(1);
-        }
+    [Fact]
+    public async Task Create_Should_Fail_When_Slug_Is_Duplicated()
+    {
+        var context = DbContextFixture.CreateContext(Guid.NewGuid().ToString());
+        var service = new CategoryService(context);
 
-        [Fact]
-        public async Task Create_Should_Fail_When_Slug_Is_Duplicated()
-        {
-            var context = DbContextFixture.CreateContext(Guid.NewGuid().ToString());
-            var service = new CategoryService(context);
+        await service.CreateAsync("Alimentação", "alimentacao");
 
-            await service.CreateAsync("Alimentação", "alimentacao");
+        Func<Task> action = async () =>
+            await service.CreateAsync("Outra", "alimentacao");
 
-            Func<Task> action = async () =>
-                await service.CreateAsync("Outra", "alimentacao");
-
-            await action.Should().ThrowAsync<Exception>();
-        }
-
-
+        await action.Should().ThrowAsync<InvalidOperationException>();
     }
 }
