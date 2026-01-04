@@ -1,6 +1,4 @@
 using FluentAssertions;
-using TF.Data;
-using TF.Models;
 using TF.Services;
 using TF.ViewModels;
 using Trust_Finance.Tests.Fixtures;
@@ -13,7 +11,7 @@ public class AccountServiceTests
     [Fact]
     public async Task Register_Should_Create_User_With_Hashed_Password()
     {
-        // Arrange (preparação)
+        // Arrange
         var context = DbContextFixture.CreateContext(Guid.NewGuid().ToString());
         var service = new AccountService(context);
 
@@ -26,10 +24,10 @@ public class AccountServiceTests
             Slug = "teste"
         };
 
-        // Act (ação)
+        // Act
         var user = await service.RegisterAsync(model);
 
-        // Assert (verificação)
+        // Assert
         user.Should().NotBeNull();
         user.Email.Should().Be("teste@gmail.com");
         user.PasswordHash.Should().NotBe("teste123");
@@ -38,31 +36,40 @@ public class AccountServiceTests
     }
 
     [Fact]
-public async Task Register_Should_Fail_When_Email_Already_Exists()
-{
-    // Arrange
-    var context = DbContextFixture.CreateContext(Guid.NewGuid().ToString());
-    var service = new AccountService(context);
-
-    var model = new RegisterUserViewModel
+    public async Task Register_Should_Fail_When_Email_Already_Exists()
     {
-        Name = "Teste",
-        Email = "duplicado@gmail.com",
-        Password = "123456",
-        Image = "img",
-        Slug = "teste"
-    };
+        // Arrange
+        var context = DbContextFixture.CreateContext(Guid.NewGuid().ToString());
+        var service = new AccountService(context);
 
-    await service.RegisterAsync(model);
+        var firstModel = new RegisterUserViewModel
+        {
+            Name = "Teste",
+            Email = "duplicado@gmail.com",
+            Password = "123456",
+            Image = "img",
+            Slug = "teste"
+        };
 
-    // Act
-    Func<Task> action = async () =>
-        await service.RegisterAsync(model);
+        var secondModel = new RegisterUserViewModel
+        {
+            Name = "Teste",
+            Email = "duplicado@gmail.com",
+            Password = "123456",
+            Image = "img",
+            Slug = "teste"
+        };
 
-    // Assert
-    await action.Should().ThrowAsync<Exception>();
-}
+        await service.RegisterAsync(firstModel);
 
+        // Act
+        Func<Task> action = async () => await service.RegisterAsync(secondModel);
 
+        // Assert
+        var ex = await action.Should().ThrowAsync<InvalidOperationException>();
+        ex.WithMessage("E-mail jÃ¡ cadastrado");
 
+        // Garante que nÃ£o criou um segundo usuÃ¡rio
+        context.Users.Should().HaveCount(1);
+    }
 }
