@@ -36,4 +36,33 @@ public class AccountServiceTests
 
         context.Users.Should().HaveCount(1);
     }
+
+    [Fact]
+public async Task Register_Should_Fail_When_Email_Already_Exists()
+{
+    // Arrange
+    var context = DbContextFixture.CreateContext(Guid.NewGuid().ToString());
+    var service = new AccountService(context);
+
+    var model = new RegisterUserViewModel
+    {
+        Name = "Teste",
+        Email = "duplicado@gmail.com",
+        Password = "123456",
+        Image = "img",
+        Slug = "teste"
+    };
+
+    await service.RegisterAsync(model);
+
+    // Act
+    Func<Task> action = async () =>
+        await service.RegisterAsync(model);
+
+    // Assert
+    await action.Should().ThrowAsync<Exception>();
+}
+
+
+
 }
