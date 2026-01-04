@@ -19,10 +19,21 @@ public class AccountService
 
     public async Task<User> RegisterAsync(RegisterUserViewModel model)
     {
+        // Normaliza e-mail para reduzir falsos negativos (espaços, etc.)
+        var email = model.Email?.Trim();
+
+        // Regra de negócio: e-mail deve ser único
+        var emailAlreadyExists = await _context.Users
+            .AsNoTracking()
+            .AnyAsync(x => x.Email == email);
+
+        if (emailAlreadyExists)
+            throw new InvalidOperationException("E-mail já cadastrado");
+
         var user = new User
         {
             Name = model.Name,
-            Email = model.Email,
+            Email = email ?? string.Empty,
             Image = model.Image,
             Slug = model.Slug,
             Role = "admin"
@@ -38,9 +49,11 @@ public class AccountService
 
     public async Task<string> LoginAsync(LoginViewModel model, TokenService tokenService)
     {
+        var email = model.Email?.Trim();
+
         var user = await _context.Users
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Email == model.Email);
+            .FirstOrDefaultAsync(x => x.Email == email);
 
         if (user == null)
             throw new UnauthorizedAccessException("Usuário ou senha inválidos");
